@@ -34,7 +34,7 @@
 =======================================================================
  */
 interface LoopssInterface {
-    // ——————————————————————————————for ERC20 methods
+    // ——————————————————————————————for ERC20 like methods
     function totalSupply() external view returns (uint256); // return total minter
 
     function balanceOf(address tokenOwner)
