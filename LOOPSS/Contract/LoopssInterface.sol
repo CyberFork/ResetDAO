@@ -97,7 +97,7 @@ interface LoopssInterface {
         uint256 NowPerLNS_Profits1e18
     );
 
-    function registerFee(string calldata _LNS) public pure returns (uint256);
+    function registerFee(string calldata _LNS) external pure returns (uint256);
 
     function registerLNS(string calldata _LNS, address _LnsOwner)
         external
@@ -109,12 +109,12 @@ interface LoopssInterface {
     function claim() external; // locked
 
     function LoopNameSystem_Resolution(string calldata _name)
-        public
+        external
         view
         returns (address);
 
     function LoopNameSystem_Reverse(address _account)
-        public
+        external
         view
         returns (string memory);
 
@@ -156,12 +156,12 @@ interface LoopssInterface {
     function getProportionReceiverTrustedSender(
         address _receiver, // = trust sender
         address _sender // = trust receiver
-    ) public view returns (uint256); // for Token _receiver and Token _sender
+    ) external view returns (uint256); // for Token _receiver and Token _sender
 
     function getRatioReceiver1e18TokenForSender(
         address _receiver, // = trust sender
         address _sender // = trust receiver
-    ) public view returns (uint256); // If return 1e17, means 0.1 Token of sender can swap 1 Token of _receiver
+    ) external view returns (uint256); // If return 1e17, means 0.1 Token of sender can swap 1 Token of _receiver
 
     function getTrustStatesForAB(address _a, address _b)
         external
@@ -172,6 +172,7 @@ interface LoopssInterface {
             uint256 bTa_portion,
             uint256 bTa_ratio
         );
+    // refs for returns
     // {
     //     return (
     //         getProportionReceiverTrustedSender(_a, _b),
@@ -186,7 +187,7 @@ interface LoopssInterface {
 
     // The static balance include really decimals in _tokenOwner's wallet. Not include flowing balance.
     function minterBalanceOf(address _minter, address _tokenOwner)
-        public
+        external
         view
         returns (uint256 balance);
 
@@ -194,12 +195,12 @@ interface LoopssInterface {
         address _startFrom,
         address[] calldata _loop,
         address _useMinterToken
-    ) public view returns (uint256 input, uint256 output);
+    ) external view returns (uint256 input, uint256 output);
 
     function loopTransfer(
         address[] calldata _loop,
         uint256 _amountInput,
         uint256 _expectOutput,
         address _useMinterToken
-    ) external lock returns (bool);
+    ) external returns (bool);
 }
