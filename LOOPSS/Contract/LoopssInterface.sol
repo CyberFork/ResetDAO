@@ -1,22 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.8.0;
 // Project:LOOPSS.me Love the world ♥
-/**
-   ,--,                                                                  
-,---.'|       ,----..       ,----..   ,-.----.                           
-|   | :      /   /   \     /   /   \  \    /  \    .--.--.    .--.--.    
-:   : |     /   .     :   /   .     : |   :    \  /  /    '. /  /    '.  
-|   ' :    .   /   ;.  \ .   /   ;.  \|   |  .\ :|  :  /`. /|  :  /`. /  
-;   ; '   .   ;   /  ` ;.   ;   /  ` ;.   :  |: |;  |  |--` ;  |  |--`   
-'   | |__ ;   |  ; \ ; |;   |  ; \ ; ||   |   \ :|  :  ;_   |  :  ;_     
-|   | :.'||   :  | ; | '|   :  | ; | '|   : .   / \  \    `. \  \    `.  
-'   :    ;.   |  ' ' ' :.   |  ' ' ' :;   | |`-'   `----.   \ `----.   \ 
-|   |  ./ '   ;  \; /  |'   ;  \; /  ||   | ;      __ \  \  | __ \  \  | 
-;   : ;    \   \  ',  /  \   \  ',  / :   ' |     /  /`--'  //  /`--'  / 
-|   ,/      ;   :    /    ;   :    /  :   : :    '--'.     /'--'.     /  
-'---'        \   \ .'      \   \ .'   |   | :      `--'---'   `--'---'   
-              `---`         `---`     `---'.|                            
-                                        `---`                            
+/**                                                                                                                                                                                                                                                                           
+LLLLLLLLLLL                                                                                                                                                         
+L:::::::::L                                                                                                                                                         
+L:::::::::L                                                                                                                                                         
+LL:::::::LL                                                                                                                                                         
+  L:::::L                  ooooooooooo      ooooooooooo   ppppp   ppppppppp       ssssssssss       ssssssssss              mmmmmmm    mmmmmmm       eeeeeeeeeeee    
+  L:::::L                oo:::::::::::oo  oo:::::::::::oo p::::ppp:::::::::p    ss::::::::::s    ss::::::::::s           mm:::::::m  m:::::::mm   ee::::::::::::ee  
+  L:::::L               o:::::::::::::::oo:::::::::::::::op:::::::::::::::::p ss:::::::::::::s ss:::::::::::::s         m::::::::::mm::::::::::m e::::::eeeee:::::ee
+  L:::::L               o:::::ooooo:::::oo:::::ooooo:::::opp::::::ppppp::::::ps::::::ssss:::::ss::::::ssss:::::s        m::::::::::::::::::::::me::::::e     e:::::e
+  L:::::L               o::::o     o::::oo::::o     o::::o p:::::p     p:::::p s:::::s  ssssss  s:::::s  ssssss         m:::::mmm::::::mmm:::::me:::::::eeeee::::::e
+  L:::::L               o::::o     o::::oo::::o     o::::o p:::::p     p:::::p   s::::::s         s::::::s              m::::m   m::::m   m::::me:::::::::::::::::e 
+  L:::::L               o::::o     o::::oo::::o     o::::o p:::::p     p:::::p      s::::::s         s::::::s           m::::m   m::::m   m::::me::::::eeeeeeeeeee  
+  L:::::L         LLLLLLo::::o     o::::oo::::o     o::::o p:::::p    p::::::pssssss   s:::::s ssssss   s:::::s         m::::m   m::::m   m::::me:::::::e           
+LL:::::::LLLLLLLLL:::::Lo:::::ooooo:::::oo:::::ooooo:::::o p:::::ppppp:::::::ps:::::ssss::::::ss:::::ssss::::::s        m::::m   m::::m   m::::me::::::::e          
+L::::::::::::::::::::::Lo:::::::::::::::oo:::::::::::::::o p::::::::::::::::p s::::::::::::::s s::::::::::::::s  ...... m::::m   m::::m   m::::m e::::::::eeeeeeee  
+L::::::::::::::::::::::L oo:::::::::::oo  oo:::::::::::oo  p::::::::::::::pp   s:::::::::::ss   s:::::::::::ss   .::::. m::::m   m::::m   m::::m  ee:::::::::::::e  
+LLLLLLLLLLLLLLLLLLLLLLLL   ooooooooooo      ooooooooooo    p::::::pppppppp      sssssssssss      sssssssssss     ...... mmmmmm   mmmmmm   mmmmmm    eeeeeeeeeeeeee  
+                                                           p:::::p                                                                                                  
+                                                           p:::::p                                                                                                  
+                                                          p:::::::p                                                                                                 
+                                                          p:::::::p                                                                                                 
+                                                          p:::::::p                                                                                                 
+                                                          ppppppppp                                                                                                                                                                                                                                                              
 */
 // Power by:blog.CyberForker.com
 /**
