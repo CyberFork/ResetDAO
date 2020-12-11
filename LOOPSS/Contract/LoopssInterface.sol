@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity >=0.6.0 <0.8.0;
+
 // Project:LOOPSS.me Love the world ♥
 /**
  ██▓     ▒█████   ▒█████   ██▓███    ██████   ██████ 
@@ -12,7 +13,8 @@ pragma solidity >=0.6.0 <0.8.0;
 ░ ░ ▒  ░  ░ ▒ ▒░   ░ ▒ ▒░ ░▒ ░     ░ ░▒  ░ ░░ ░▒  ░ ░
   ░ ░   ░ ░ ░ ▒  ░ ░ ░ ▒  ░░       ░  ░  ░  ░  ░  ░  
     ░  ░    ░ ░      ░ ░                 ░        ░  
-*/                                                 
+*/
+
 // Power by:blog.CyberForker.com
 /**
     ______      __              ______           __
@@ -156,6 +158,11 @@ interface LoopssInterface {
         uint256 TrustValue // 0:0, 1:xx%, 2: yy:1e18
     );
 
+    function setRatioMy1e18TokenForSender(
+        uint256 _amountFor1e18Token,// ratio for 1e18 tokens
+        address _sender// Trust receiver
+    ) external returns (bool);
+
     function getProportionReceiverTrustedSender(
         address _receiver, // = trust sender
         address _sender // = trust receiver
@@ -175,6 +182,7 @@ interface LoopssInterface {
             uint256 bTa_portion,
             uint256 bTa_ratio
         );
+
     // refs for returns
     // {
     //     return (
