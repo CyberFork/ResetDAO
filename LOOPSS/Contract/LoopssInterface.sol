@@ -103,6 +103,8 @@ interface LoopssInterface {
     );
     // ——————————————————————————————for LOOPSS methods
     // ——————————————LNS
+    function totalLNS() external view returns (uint256); 
+    function baseFee() external view returns (uint256); 
     event NewLNS(
         address indexed Owner,
         address indexed Inviter,
@@ -160,6 +162,7 @@ interface LoopssInterface {
     ) external returns (bool);
 
     // ——————————————Loopss
+    function LLL() external view returns (uint256); //Loop Lenght Limit, least 3.  e.g.: (A→B→A|C).length => 3
     event TrustEvent(
         address indexed TrustSender, //Trust sender; Token receiver
         address indexed BeenTrusted, //Token sender; Trust receiver
