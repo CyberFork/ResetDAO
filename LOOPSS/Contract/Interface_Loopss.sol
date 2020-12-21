@@ -47,7 +47,7 @@ LLLLLLLLLLLLLLLLLLLLLLLL   ooooooooooo      ooooooooooo    p::::::pppppppp      
 |__/  |__/ \_______/|_______/  \_______/   \___/  |_______/ |__/  |__/ \______/ 
                                                                                                                                                                                                                                       
  */
-interface LoopssInterface {
+interface Interface_Loopss {
     // ——————————————————————————————for ERC20 like methods
     function totalSupply() external view returns (uint256); // return total minter
 
