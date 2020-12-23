@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.7.6;
 // Project:LOOPSS.me Love the world ♥
 /**                                                                                                                                                                                                                                                                           
 LLLLLLLLLLL                                                                                                                                                         
@@ -75,7 +75,7 @@ contract A_Deploy_LoopssWraper is LoopssWrapper {
         return addressLOOPSS.call(_data);
     }
 
-    constructor(address minterAddress) public {
+    constructor(address minterAddress) {
         wrapMinter = minterAddress;
         symbol = _symbolOf(wrapMinter);
         name = "LOOPSS.me wrapper";

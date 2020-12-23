@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.7.6;
 // kovan : 0x253296DE2E614A13De5FD97D58D42988b502985A
 // Project:LOOPSS.me Love the world ♥
 /**                                                                                                                                                                                                                                                                           

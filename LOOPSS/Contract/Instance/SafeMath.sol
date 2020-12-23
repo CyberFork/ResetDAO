@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.7.6;
 contract SafeMath {
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;

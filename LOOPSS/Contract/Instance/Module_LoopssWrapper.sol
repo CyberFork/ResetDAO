@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.7.6;
 
-//TODO:将Wrapper单独分离出来
-pragma solidity >=0.6.0 <0.8.0;
 // Project:LOOPSS.me Love the world ♥
 /**                                                                                                                                                                                                                                                                           
 LLLLLLLLLLL                                                                                                                                                         
@@ -60,7 +59,7 @@ contract Owned {
 
     event OwnershipTransferred(address indexed _from, address indexed _to);
 
-    constructor() public {
+    constructor() {
         owner = msg.sender;
     }
 
@@ -115,22 +114,25 @@ contract LoopssWrapper is ERC20Interface, Owned, SafeMath {
         emit Transfer(_from, addressLOOPSS, _amount);
     }
 
-    function wrap(uint256 amount) external returns (bool) {
+    function wrap(uint256 amount) external returns (bool success) {
         // 交互Loopss合约转入到本合约
         if (
             Loopss.transferFrom(msg.sender, wrapMinter, address(this), amount)
         ) {
             _mint(msg.sender, amount);
         }
+        return true;
     }
 
-    function unwrap(uint256 amount) external returns (bool) {
+    function unwrap(uint256 amount) external returns (bool success) {
         // 交互Loopss合约从本合约转出到Msg.sender
         if (
             Loopss.transferFrom(address(this), wrapMinter, msg.sender, amount)
         ) {
             _burn(msg.sender, amount);
         }
+
+        return true;
     }
 
     function totalSupply() public view override returns (uint256) {
@@ -204,4 +206,3 @@ contract LoopssWrapper is ERC20Interface, Owned, SafeMath {
         revert();
     }
 }
-
