@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// kovan : 0x253296DE2E614A13De5FD97D58D42988b502985A
+
+//TODO:将Wrapper单独分离出来
 pragma solidity >=0.6.0 <0.8.0;
 // Project:LOOPSS.me Love the world ♥
 /**                                                                                                                                                                                                                                                                           
@@ -49,8 +50,8 @@ LLLLLLLLLLLLLLLLLLLLLLLL   ooooooooooo      ooooooooooo    p::::::pppppppp      
                                                                                                                                                                                                                                       
  */
 
-import "./Interface_Loopss.sol";
-import "./ERC20Interface.sol";
+import "../Interface/Interface_Loopss.sol";
+import "../Interface/ERC20Interface.sol";
 import "./SafeMath.sol";
 
 contract Owned {
@@ -80,8 +81,12 @@ contract Owned {
     }
 }
 
-contract LoopMining is Owned, SafeMath {
-    address public LoopGeneTokenAddress;
+contract LoopssWrapper is ERC20Interface, Owned, SafeMath {
+    string public symbol;
+    string public name;
+    uint8 public decimals = 18;
+    uint256 internal _totalSupply;
+    address public wrapMinter;
     address internal addressLOOPSS = 0x697c8EF8f85cddD090Bb126746C71d72637c04F4;
     Interface_Loopss Loopss = Interface_Loopss(addressLOOPSS);
 
@@ -89,102 +94,98 @@ contract LoopMining is Owned, SafeMath {
     mapping(address => mapping(address => uint256)) allowed;
 
     function approveSelf() public {
-        Loopss.approve(LoopGeneTokenAddress, address(this), uint256(-1));
+        Loopss.approve(wrapMinter, address(this), uint256(-1));
     }
 
-    /**
-创建累积每份收益变量
-通过Loopss调用获取挖矿人的trustcount作为算力
-每次结算时将时间累积收益div总trustcount，之后更新到每份收益变量上，
-通过直接转账本地址中的LoopToken给结算人
- */
-    uint256 miningSpeed;
-    uint256 lastUpdateTime;
-    uint256 totalMiningTrust;
-    uint256 public accLoopPerTrust1e18;
-    mapping(address => uint256) miningTrustCount;
-    mapping(address => uint256) miningAccLoopPerTrust1e18;
+    function _mint(address _to, uint256 _amount) internal {
+        // increase totalSupply
+        _totalSupply = safeAdd(_totalSupply, _amount);
+        // add amount for _to balance
+        balances[_to] = safeAdd(balances[_to], _amount);
 
-    function min(uint256 _a, uint256 _b) internal pure returns (uint256) {
-        if (_a < _b) {
-            return _a;
+        emit Transfer(addressLOOPSS, _to, _amount);
+    }
+
+    function _burn(address _from, uint256 _amount) internal {
+        // decrease totalSupply
+        _totalSupply = safeSub(_totalSupply, _amount);
+        // sub amount for _from balance
+        balances[_from] = safeSub(balances[_from], _amount);
+
+        emit Transfer(_from, addressLOOPSS, _amount);
+    }
+
+    function wrap(uint256 amount) external returns (bool) {
+        // 交互Loopss合约转入到本合约
+        if (
+            Loopss.transferFrom(msg.sender, wrapMinter, address(this), amount)
+        ) {
+            _mint(msg.sender, amount);
         }
-        return _b;
     }
 
-    // 更新挖矿：没有的开始挖，开始挖的则结算并更新算力。
-    // 获取挖矿信息：unclaim
-    modifier updateAccLoop() {
-        uint256 dTime = min(safeSub(now, lastUpdateTime), 86400);
-        accLoopPerTrust1e18 = safeAdd(
-            accLoopPerTrust1e18,
-            safeMul(safeMul(miningSpeed, dTime), 1e18) /
-                totalMiningTrust
-        );
-        lastUpdateTime = now;
-        _;
-    }
-
-    function unClaimOf(address _miner) external view returns (uint256) {
-        uint256 dTime = min(safeSub(now, lastUpdateTime), 86400);
-        uint256 _accLoopPerTrust1e18 =
-            safeAdd(
-                accLoopPerTrust1e18,
-                safeMul(safeMul(miningSpeed, dTime), 1e18) / totalMiningTrust
-            );
-
-        return
-            safeMul(
-                safeSub(
-                    _accLoopPerTrust1e18, 
-                    miningAccLoopPerTrust1e18[_miner]
-                ),
-                miningTrustCount[_miner]
-            ) / 1e18;
-    }
-
-    function perfits(address _miner) internal view returns (uint256) {
-        return
-            safeMul(
-                safeSub(accLoopPerTrust1e18, miningAccLoopPerTrust1e18[_miner]),
-                miningTrustCount[_miner]
-            ) / 1e18;
-    }
-
-    function claim() external updateAccLoop returns (bool) {
-        // 判断是初次挖矿还是多次挖矿:如果是多次则计算未结算收益并转账
-        if (miningTrustCount[msg.sender] > 0) {
-            // 更新+结算挖矿:totalMiningTrust判断后有所增减
-            // 对于有miningTrustCount的用户，先根据accLoopPerTrust1e18 - miningAccLoopPerTrust1e18[msg.sender]来计算每份收益，再乘以其总trust，结算收益
-            uint256 _perfits = perfits(msg.sender);
-            // miningAccLoopPerTrust1e18[msg.sender] = accLoopPerTrust1e18;
-            require(Loopss.getProportionReceiverTrustedSender(msg.sender,LoopGeneTokenAddress) > 0,'u Not T. LOOP');
-            Loopss.transferFrom(
-                LoopGeneTokenAddress,
-                LoopGeneTokenAddress,
-                msg.sender,
-                _perfits
-            );
-            // 获取并设置信任数量：
+    function unwrap(uint256 amount) external returns (bool) {
+        // 交互Loopss合约从本合约转出到Msg.sender
+        if (
+            Loopss.transferFrom(address(this), wrapMinter, msg.sender, amount)
+        ) {
+            _burn(msg.sender, amount);
         }
-        // 后面都会执行收益对齐和重置信任数量
-        // 对齐累积收益
-        miningAccLoopPerTrust1e18[msg.sender] = accLoopPerTrust1e18;
-        // 获取并重置信任数量
-        (, uint256 _beenTrustCount, , , ) = Loopss.getAccountInfoOf(msg.sender);
-        miningTrustCount[msg.sender] = _beenTrustCount;
-        // 更新总的挖矿信任数量 totalMiningTrust
-        if (_beenTrustCount > miningTrustCount[msg.sender]) {
-            totalMiningTrust = safeAdd(
-                totalMiningTrust,
-                safeSub(_beenTrustCount, miningTrustCount[msg.sender])
-            );
-        } else if (_beenTrustCount < miningTrustCount[msg.sender]) {
-            totalMiningTrust = safeSub(
-                totalMiningTrust,
-                safeSub(miningTrustCount[msg.sender], _beenTrustCount)
-            );
-        }
+    }
+
+    function totalSupply() public view override returns (uint256) {
+        return _totalSupply - balances[address(0)];
+    }
+
+    function balanceOf(address tokenOwner)
+        public
+        view
+        override
+        returns (uint256 balance)
+    {
+        return balances[tokenOwner];
+    }
+
+    function transfer(address to, uint256 amount)
+        public
+        override
+        returns (bool success)
+    {
+        balances[msg.sender] = safeSub(balances[msg.sender], amount);
+        balances[to] = safeAdd(balances[to], amount);
+        emit Transfer(msg.sender, to, amount);
+        return true;
+    }
+
+    function approve(address spender, uint256 amount)
+        public
+        override
+        returns (bool success)
+    {
+        allowed[msg.sender][spender] = amount;
+        emit Approval(msg.sender, spender, amount);
+        return true;
+    }
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) public override returns (bool success) {
+        balances[from] = safeSub(balances[from], amount);
+        allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], amount);
+        balances[to] = safeAdd(balances[to], amount);
+        emit Transfer(from, to, amount);
+        return true;
+    }
+
+    function allowance(address tokenOwner, address spender)
+        public
+        view
+        override
+        returns (uint256 remaining)
+    {
+        return allowed[tokenOwner][spender];
     }
 
     function transferAnyERC20Token(address tokenAddress, uint256 amount)
@@ -202,22 +203,5 @@ contract LoopMining is Owned, SafeMath {
     receive() external payable {
         revert();
     }
-
-    function callLoopss(bytes calldata _data)
-        external
-        onlyOwner
-        returns (bool, bytes memory)
-    {
-        return addressLOOPSS.call(_data);
-    }
-
-    constructor() public {
-        approveSelf();
-        // TODO：设置
-        LoopGeneTokenAddress = 0x8255dEf84A81A7C7E6BA5D35Cb6223AD30a572c3;
-        // miner
-        totalMiningTrust = 1;
-        lastUpdateTime = now;
-        miningSpeed = 1e15; // 1e18 * 1% * 1/10 per second
-    }
 }
+
