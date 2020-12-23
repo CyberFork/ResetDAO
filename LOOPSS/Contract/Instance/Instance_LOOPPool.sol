@@ -81,9 +81,9 @@ contract Owned {
     }
 }
 
-contract LoopPool is Owned, SafeMath, SafeControl {
+contract LOOPPool is Owned, SafeMath, SafeControl {
     address public LoopGeneTokenAddress;
-    address internal addressLOOPSS = 0x697c8EF8f85cddD090Bb126746C71d72637c04F4;
+    address internal addressLOOPSS = 0x8E4DfCF7fa2425eC9950f9789D2EB92142bb0C86;
     Interface_Loopss Loopss = Interface_Loopss(addressLOOPSS);
 
     function approveSelf() public {
@@ -97,13 +97,6 @@ contract LoopPool is Owned, SafeMath, SafeControl {
     mapping(address => uint256) minerTrustCount;
     mapping(address => uint256) minerAccLoopPerTrust1e18;
     mapping(address => uint256) minerLastUpdateTime;
-
-    // function min(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    //     if (_a < _b) {
-    //         return _a;
-    //     }
-    //     return _b;
-    // }
 
     // 更新挖矿：没有的开始挖，开始挖的则结算并更新算力。
     // 获取挖矿信息：unclaim
@@ -219,11 +212,11 @@ contract LoopPool is Owned, SafeMath, SafeControl {
 
 
 }
-contract A_Deploy_LoopPool is LoopPool {
+contract A_Deploy_LOOPPool is LOOPPool {
     constructor() {
         approveSelf();
         // TODO：设置
-        LoopGeneTokenAddress = 0x8255dEf84A81A7C7E6BA5D35Cb6223AD30a572c3;
+        LoopGeneTokenAddress = 0x880E7Df34378712107AcdaCF705c2257Bf42b1A5;
         // miner init
         totalMiningTrust = 1;
         lastUpdateTime = block.timestamp;

@@ -86,7 +86,7 @@ contract LoopssWrapper is ERC20Interface, Owned, SafeMath {
     uint8 public decimals = 18;
     uint256 internal _totalSupply;
     address public wrapMinter;
-    address internal addressLOOPSS = 0x697c8EF8f85cddD090Bb126746C71d72637c04F4;
+    address internal addressLOOPSS = 0x8E4DfCF7fa2425eC9950f9789D2EB92142bb0C86;
     Interface_Loopss Loopss = Interface_Loopss(addressLOOPSS);
 
     mapping(address => uint256) balances;

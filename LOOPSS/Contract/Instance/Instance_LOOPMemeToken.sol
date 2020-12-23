@@ -68,10 +68,10 @@ contract LoopssCaller is LoopssWrapper {
     }
 }
 
-contract A_Deploy_LoopssMemeToken is LoopssCaller {
+contract A_Deploy_LoopMemeToken is LoopssCaller {
     constructor() {
         wrapMinter = address(this);
-        symbol = "LOOP";
+        symbol = "LOOP";// symbol of LoopMemeToken is LOOP
         name = "wraped LOOP";
         approveSelf();
         emit Transfer(address(0), msg.sender, _totalSupply);
