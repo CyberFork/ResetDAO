@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
-// kovan : 0x253296DE2E614A13De5FD97D58D42988b502985A
 pragma solidity >=0.6.0 <0.8.0;
+// kovan : 0x253296DE2E614A13De5FD97D58D42988b502985A
 // Project:LOOPSS.me Love the world ♥
 /**                                                                                                                                                                                                                                                                           
 LLLLLLLLLLL                                                                                                                                                         
@@ -60,7 +60,7 @@ contract Owned {
 
     event OwnershipTransferred(address indexed _from, address indexed _to);
 
-    constructor() public {
+    constructor() {
         owner = msg.sender;
     }
 
@@ -81,7 +81,7 @@ contract Owned {
     }
 }
 
-contract LoopPool is Owned, SafeMath {
+contract LoopPool is Owned, SafeMath, SafeControl {
     address public LoopGeneTokenAddress;
     address internal addressLOOPSS = 0x697c8EF8f85cddD090Bb126746C71d72637c04F4;
     Interface_Loopss Loopss = Interface_Loopss(addressLOOPSS);
@@ -108,12 +108,12 @@ contract LoopPool is Owned, SafeMath {
     // 更新挖矿：没有的开始挖，开始挖的则结算并更新算力。
     // 获取挖矿信息：unclaim
     modifier updateAccLoop() {
-        uint256 dTime = safeSub(now, lastUpdateTime);
+        uint256 dTime = safeSub(block.timestamp, lastUpdateTime);
         accLoopPerTrust1e18 = safeAdd(
             accLoopPerTrust1e18,
             safeMul(safeMul(miningSpeed, dTime), 1e18) / totalMiningTrust
         );
-        lastUpdateTime = now;
+        lastUpdateTime = block.timestamp;
         _;
     }
 
@@ -122,7 +122,7 @@ contract LoopPool is Owned, SafeMath {
         view
         returns (uint256)
     {
-        uint256 udTime = safeSub(now, minerLastUpdateTime[msg.sender]);
+        uint256 udTime = safeSub(block.timestamp, minerLastUpdateTime[msg.sender]);
         uint256 rawPerfits1e18 =
             safeMul(
                 safeSub(
@@ -138,7 +138,7 @@ contract LoopPool is Owned, SafeMath {
     }
 
     function unClaimOf(address _miner) external view returns (uint256) {
-        uint256 dTime = safeSub(now, lastUpdateTime);
+        uint256 dTime = safeSub(block.timestamp, lastUpdateTime);
         uint256 _accLoopPerTrust1e18 =
             safeAdd(
                 accLoopPerTrust1e18,
@@ -148,7 +148,7 @@ contract LoopPool is Owned, SafeMath {
         return _unClaimOf(_miner, _accLoopPerTrust1e18);
     }
 
-    function claim() external lock updateAccLoop returns (bool) {
+    function claim() external lock updateAccLoop returns (bool success) {
         // 判断是初次挖矿还是多次挖矿:如果是多次则计算未结算收益并转账
         if (minerTrustCount[msg.sender] > 0) {
             // 更新+结算挖矿:totalMiningTrust判断后有所增减
@@ -170,7 +170,7 @@ contract LoopPool is Owned, SafeMath {
                 _perfits
             );
         }
-        minerLastUpdateTime[msg.sender] = now;
+        minerLastUpdateTime[msg.sender] = block.timestamp;
         // 后面都会执行收益对齐和重置信任数量
         // 对齐累积收益
         minerAccLoopPerTrust1e18[msg.sender] = accLoopPerTrust1e18;
@@ -189,6 +189,8 @@ contract LoopPool is Owned, SafeMath {
                 safeSub(minerTrustCount[msg.sender], _beenTrustCount)
             );
         }
+        
+        return true;
     }
 
     function transferAnyERC20Token(address tokenAddress, uint256 amount)
@@ -218,13 +220,13 @@ contract LoopPool is Owned, SafeMath {
 
 }
 contract A_Deploy_LoopPool is LoopPool {
-    constructor() public {
+    constructor() {
         approveSelf();
         // TODO：设置
         LoopGeneTokenAddress = 0x8255dEf84A81A7C7E6BA5D35Cb6223AD30a572c3;
         // miner init
         totalMiningTrust = 1;
-        lastUpdateTime = now;
+        lastUpdateTime = block.timestamp;
         miningSpeed = 1e15; // 1e18 * 1% * 1/10 per second
     }
 }
