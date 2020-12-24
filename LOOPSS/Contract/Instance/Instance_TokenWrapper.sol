@@ -72,7 +72,7 @@ contract A_Deploy_LoopssWraper is LoopssWrapper {
         onlyOwner
         returns (bool, bytes memory)
     {
-        return addressLOOPSS.call(_data);
+        return LOOPSSMEaddress.call(_data);
     }
 
     constructor(address minterAddress) {

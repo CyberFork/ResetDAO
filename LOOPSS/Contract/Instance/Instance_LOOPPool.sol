@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
-// kovan : 0x253296DE2E614A13De5FD97D58D42988b502985A
+// kovan : 0x89434bfc9708623317F964774708cF9f11963e01
 // Project:LOOPSS.me Love the world ♥
 /**                                                                                                                                                                                                                                                                           
 LLLLLLLLLLL                                                                                                                                                         
@@ -82,21 +82,22 @@ contract Owned {
 }
 
 contract LOOPPool is Owned, SafeMath, SafeControl {
-    address public LoopGeneTokenAddress;
-    address internal addressLOOPSS = 0x8E4DfCF7fa2425eC9950f9789D2EB92142bb0C86;
-    Interface_Loopss Loopss = Interface_Loopss(addressLOOPSS);
+    address public LOOPTokenAddress;
+    address internal LOOPSSMEaddress =
+        0x8E4DfCF7fa2425eC9950f9789D2EB92142bb0C86;
+    Interface_Loopss Loopss = Interface_Loopss(LOOPSSMEaddress);
 
     function approveSelf() public {
-        Loopss.approve(LoopGeneTokenAddress, address(this), uint256(-1));
+        Loopss.approve(LOOPTokenAddress, address(this), uint256(-1));
     }
 
-    uint256 miningSpeed;
-    uint256 lastUpdateTime;
-    uint256 totalMiningTrust;
+    uint256 public miningSpeed;
+    uint256 public lastUpdateTime;
+    uint256 public totalMiningTrust;
     uint256 public accLoopPerTrust1e18;
-    mapping(address => uint256) minerTrustCount;
-    mapping(address => uint256) minerAccLoopPerTrust1e18;
-    mapping(address => uint256) minerLastUpdateTime;
+    mapping(address => uint256) public minerTrustCount;
+    mapping(address => uint256) public minerLastUpdateTime;
+    mapping(address => uint256) public minerAccLoopPerTrust1e18;
 
     // 更新挖矿：没有的开始挖，开始挖的则结算并更新算力。
     // 获取挖矿信息：unclaim
@@ -115,19 +116,18 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
         view
         returns (uint256)
     {
-        uint256 udTime = safeSub(block.timestamp, minerLastUpdateTime[msg.sender]);
+        // get user differential time
+        uint256 udTime =
+            safeSub(block.timestamp, minerLastUpdateTime[msg.sender]);
         uint256 rawPerfits1e18 =
             safeMul(
-                safeSub(
-                    _accLoopPerTrust1e18,
-                    minerAccLoopPerTrust1e18[_miner]
-                ),
+                safeSub(_accLoopPerTrust1e18, minerAccLoopPerTrust1e18[_miner]),
                 minerTrustCount[_miner]
             );
         return
             udTime <= 1 days
                 ? (rawPerfits1e18 / 1 ether)
-                : (safeMul(rawPerfits1e18, 1 days) / safeMul(udTime, 1 ether));
+                : ((safeMul(rawPerfits1e18, 1 days) / udTime) / 1 ether);
     }
 
     function unClaimOf(address _miner) external view returns (uint256) {
@@ -152,13 +152,13 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
             require(
                 Loopss.getProportionReceiverTrustedSender(
                     msg.sender,
-                    LoopGeneTokenAddress
+                    LOOPTokenAddress
                 ) > 0,
                 "u Not T. LOOP"
             );
             Loopss.transferFrom(
-                LoopGeneTokenAddress, // from
-                LoopGeneTokenAddress, // useToken
+                LOOPTokenAddress, // from
+                LOOPTokenAddress, // useToken
                 msg.sender, // to
                 _perfits
             );
@@ -182,7 +182,7 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
                 safeSub(minerTrustCount[msg.sender], _beenTrustCount)
             );
         }
-        
+
         return true;
     }
 
@@ -207,16 +207,20 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
         onlyOwner
         returns (bool, bytes memory)
     {
-        return addressLOOPSS.call(_data);
+        return LOOPSSMEaddress.call(_data);
     }
 
-
+    function setMiningSpeed(uint256 _speed) external onlyOwner {
+        require(_speed < 1e16, "Max 10%");
+        miningSpeed = _speed;
+    }
 }
+
 contract A_Deploy_LOOPPool is LOOPPool {
     constructor() {
         approveSelf();
         // TODO：设置
-        LoopGeneTokenAddress = 0x880E7Df34378712107AcdaCF705c2257Bf42b1A5;
+        LOOPTokenAddress = 0x880E7Df34378712107AcdaCF705c2257Bf42b1A5;
         // miner init
         totalMiningTrust = 1;
         lastUpdateTime = block.timestamp;

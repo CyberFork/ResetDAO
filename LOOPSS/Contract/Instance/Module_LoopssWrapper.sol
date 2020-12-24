@@ -86,8 +86,8 @@ contract LoopssWrapper is ERC20Interface, Owned, SafeMath {
     uint8 public decimals = 18;
     uint256 internal _totalSupply;
     address public wrapMinter;
-    address internal addressLOOPSS = 0x8E4DfCF7fa2425eC9950f9789D2EB92142bb0C86;
-    Interface_Loopss Loopss = Interface_Loopss(addressLOOPSS);
+    address internal LOOPSSMEaddress = 0x8E4DfCF7fa2425eC9950f9789D2EB92142bb0C86;
+    Interface_Loopss Loopss = Interface_Loopss(LOOPSSMEaddress);
 
     mapping(address => uint256) balances;
     mapping(address => mapping(address => uint256)) allowed;
@@ -102,7 +102,7 @@ contract LoopssWrapper is ERC20Interface, Owned, SafeMath {
         // add amount for _to balance
         balances[_to] = safeAdd(balances[_to], _amount);
 
-        emit Transfer(addressLOOPSS, _to, _amount);
+        emit Transfer(LOOPSSMEaddress, _to, _amount);
     }
 
     function _burn(address _from, uint256 _amount) internal {
@@ -111,7 +111,7 @@ contract LoopssWrapper is ERC20Interface, Owned, SafeMath {
         // sub amount for _from balance
         balances[_from] = safeSub(balances[_from], _amount);
 
-        emit Transfer(_from, addressLOOPSS, _amount);
+        emit Transfer(_from, LOOPSSMEaddress, _amount);
     }
 
     function wrap(uint256 amount) external returns (bool success) {

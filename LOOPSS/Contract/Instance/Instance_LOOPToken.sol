@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// kovan:0x8255dEf84A81A7C7E6BA5D35Cb6223AD30a572c3
+// kovan:0x880E7Df34378712107AcdaCF705c2257Bf42b1A5
 pragma solidity ^0.7.6;
 // Project:LOOPSS.me Love the world ♥
 /**                                                                                                                                                                                                                                                                           
@@ -57,7 +57,7 @@ contract LoopssCaller is LoopssWrapper {
         onlyOwner
         returns (bool, bytes memory)
     {
-        return addressLOOPSS.call(_data);
+        return LOOPSSMEaddress.call(_data);
     }
 
     function approveMinePoolContract(
@@ -68,10 +68,10 @@ contract LoopssCaller is LoopssWrapper {
     }
 }
 
-contract A_Deploy_LoopMemeToken is LoopssCaller {
+contract A_Deploy_LOOPToken is LoopssCaller {
     constructor() {
         wrapMinter = address(this);
-        symbol = "LOOP";// symbol of LoopMemeToken is LOOP
+        symbol = "LOOP";// symbol of LOOPToken is LOOP
         name = "wraped LOOP";
         approveSelf();
         emit Transfer(address(0), msg.sender, _totalSupply);
