@@ -211,7 +211,7 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
     }
 
     function setMiningSpeed(uint256 _speed) external onlyOwner {
-        require(_speed < 1e16, "Max 10%");
+        require(_speed <= 1e16, "Max 10%");
         miningSpeed = _speed;
     }
 }

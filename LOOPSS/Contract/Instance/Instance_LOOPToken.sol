@@ -71,7 +71,7 @@ contract LoopssCaller is LoopssWrapper {
 contract A_Deploy_LOOPToken is LoopssCaller {
     constructor() {
         wrapMinter = address(this);
-        symbol = "LOOP";// symbol of LOOPToken is LOOP
+        symbol = "LOOP"; // symbol of LOOPToken is LOOP
         name = "wraped LOOP";
         approveSelf();
         emit Transfer(address(0), msg.sender, _totalSupply);
