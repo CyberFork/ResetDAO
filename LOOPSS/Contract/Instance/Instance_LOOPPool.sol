@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
 // kovan : 0x89434bfc9708623317F964774708cF9f11963e01
+// 0x466Fe7fc97932f53E3ccea277695A807f3909a2A
+// 0xBdf7d4725cfecAaCE3B25bA395E48bDCEc946C90
 // Project:LOOPSS.me Love the world ♥
 /**                                                                                                                                                                                                                                                                           
 LLLLLLLLLLL                                                                                                                                                         
@@ -99,26 +101,30 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
     mapping(address => uint256) public minerLastUpdateTime;
     mapping(address => uint256) public minerAccLoopPerTrust1e18;
 
-    // 更新挖矿：没有的开始挖，开始挖的则结算并更新算力。
-    // 获取挖矿信息：unclaim
-    modifier updateAccLoop() {
+    function _newAccLoopPerTrust1e18() public view returns (uint256) {
         uint256 dTime = safeSub(block.timestamp, lastUpdateTime);
-        accLoopPerTrust1e18 = safeAdd(
-            accLoopPerTrust1e18,
-            safeMul(safeMul(miningSpeed, dTime), 1e18) / totalMiningTrust
-        );
+        uint256 _accLoopPerTrust1e18 =
+            safeAdd(
+                accLoopPerTrust1e18,
+                safeMul(safeMul(miningSpeed, dTime), 1e18) / totalMiningTrust
+            );
+        return _accLoopPerTrust1e18;
+    }
+
+    modifier updateAccLoop() {
+        accLoopPerTrust1e18 = _newAccLoopPerTrust1e18();
         lastUpdateTime = block.timestamp;
         _;
     }
 
+    // 获取挖矿信息：unclaim
     function _unClaimOf(address _miner, uint256 _accLoopPerTrust1e18)
         internal
         view
         returns (uint256)
     {
         // get user differential time
-        uint256 udTime =
-            safeSub(block.timestamp, minerLastUpdateTime[msg.sender]);
+        uint256 udTime = safeSub(block.timestamp, minerLastUpdateTime[_miner]);
         uint256 rawPerfits1e18 =
             safeMul(
                 safeSub(_accLoopPerTrust1e18, minerAccLoopPerTrust1e18[_miner]),
@@ -131,16 +137,10 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
     }
 
     function unClaimOf(address _miner) external view returns (uint256) {
-        uint256 dTime = safeSub(block.timestamp, lastUpdateTime);
-        uint256 _accLoopPerTrust1e18 =
-            safeAdd(
-                accLoopPerTrust1e18,
-                safeMul(safeMul(miningSpeed, dTime), 1e18) / totalMiningTrust
-            );
-
-        return _unClaimOf(_miner, _accLoopPerTrust1e18);
+        return _unClaimOf(_miner, _newAccLoopPerTrust1e18());
     }
 
+    // 更新挖矿：没有的开始挖，开始挖的则结算并更新算力。
     function claim() external lock updateAccLoop returns (bool success) {
         // 判断是初次挖矿还是多次挖矿:如果是多次则计算未结算收益并转账
         if (minerTrustCount[msg.sender] > 0) {
@@ -169,7 +169,6 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
         minerAccLoopPerTrust1e18[msg.sender] = accLoopPerTrust1e18;
         // 获取并重置信任数量
         (, uint256 _beenTrustCount, , , ) = Loopss.getAccountInfoOf(msg.sender);
-        minerTrustCount[msg.sender] = _beenTrustCount;
         // 更新总的挖矿信任数量 totalMiningTrust
         if (_beenTrustCount > minerTrustCount[msg.sender]) {
             totalMiningTrust = safeAdd(
@@ -182,6 +181,7 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
                 safeSub(minerTrustCount[msg.sender], _beenTrustCount)
             );
         }
+        minerTrustCount[msg.sender] = _beenTrustCount;
 
         return true;
     }
