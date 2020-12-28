@@ -101,7 +101,7 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
     mapping(address => uint256) public minerLastUpdateTime;
     mapping(address => uint256) public minerAccLoopPerTrust1e18;
 
-    function _newAccLoopPerTrust1e18() public view returns (uint256) {
+    function _newAccLoopPerTrust1e18() internal view returns (uint256) {
         uint256 dTime = safeSub(block.timestamp, lastUpdateTime);
         uint256 _accLoopPerTrust1e18 =
             safeAdd(
