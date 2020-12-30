@@ -3,6 +3,7 @@ pragma solidity ^0.7.6;
 // kovan : 0x89434bfc9708623317F964774708cF9f11963e01
 // 0x466Fe7fc97932f53E3ccea277695A807f3909a2A
 // 0xBdf7d4725cfecAaCE3B25bA395E48bDCEc946C90
+// 0xD1E97844Ad40c9B53Aa51EA38e6928011D027f1A
 // Project:LOOPSS.me Love the world ♥
 /**                                                                                                                                                                                                                                                                           
 LLLLLLLLLLL                                                                                                                                                         
@@ -87,12 +88,7 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
     address public LOOPTokenAddress;
     address internal LOOPSSMEaddress =
         0x8E4DfCF7fa2425eC9950f9789D2EB92142bb0C86;
-    Interface_Loopss Loopss = Interface_Loopss(LOOPSSMEaddress);
-
-    function approveSelf() public {
-        Loopss.approve(LOOPTokenAddress, address(this), uint256(-1));
-    }
-
+    uint256 public totalMined;
     uint256 public miningSpeed;
     uint256 public lastUpdateTime;
     uint256 public totalMiningTrust;
@@ -100,6 +96,7 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
     mapping(address => uint256) public minerTrustCount;
     mapping(address => uint256) public minerLastUpdateTime;
     mapping(address => uint256) public minerAccLoopPerTrust1e18;
+    Interface_Loopss Loopss = Interface_Loopss(LOOPSSMEaddress);
 
     function _newAccLoopPerTrust1e18() internal view returns (uint256) {
         uint256 dTime = safeSub(block.timestamp, lastUpdateTime);
@@ -140,13 +137,14 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
         return _unClaimOf(_miner, _newAccLoopPerTrust1e18());
     }
 
+    
     // 更新挖矿：没有的开始挖，开始挖的则结算并更新算力。
     function claim() external lock updateAccLoop returns (bool success) {
         // 判断是初次挖矿还是多次挖矿:如果是多次则计算未结算收益并转账
         if (minerTrustCount[msg.sender] > 0) {
             // 更新+结算挖矿:totalMiningTrust判断后有所增减
             // 对于有minerTrustCount的用户，先根据accLoopPerTrust1e18 - minerAccLoopPerTrust1e18[msg.sender]来计算每份收益，再乘以其总trust，结算收益
-            uint256 _perfits = _unClaimOf(msg.sender, accLoopPerTrust1e18);
+            uint256 _mined = _unClaimOf(msg.sender, accLoopPerTrust1e18);
             // minerAccLoopPerTrust1e18[msg.sender] = accLoopPerTrust1e18;
             // 初始挖矿不需要信任，提取时再通过unclaim吸引着进行Trust
             require(
@@ -160,8 +158,9 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
                 LOOPTokenAddress, // from
                 LOOPTokenAddress, // useToken
                 msg.sender, // to
-                _perfits
+                _mined
             );
+            totalMined = safeAdd(totalMined,_mined);
         }
         minerLastUpdateTime[msg.sender] = block.timestamp;
         // 后面都会执行收益对齐和重置信任数量
@@ -218,7 +217,6 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
 
 contract A_Deploy_LOOPPool is LOOPPool {
     constructor() {
-        approveSelf();
         // TODO：设置
         LOOPTokenAddress = 0x880E7Df34378712107AcdaCF705c2257Bf42b1A5;
         // miner init

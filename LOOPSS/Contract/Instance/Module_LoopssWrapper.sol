@@ -98,20 +98,18 @@ contract LoopssWrapper is ERC20Interface, Owned, SafeMath {
     }
 
     function _mint(address _to, uint256 _amount) internal {
-        // increase totalSupply
-        _totalSupply = safeAdd(_totalSupply, _amount);
         // add amount for _to balance
         balances[_to] = safeAdd(balances[_to], _amount);
-
+        // increase totalSupply
+        _totalSupply = safeAdd(_totalSupply, _amount);
         emit Transfer(LOOPSSMEaddress, _to, _amount);
     }
 
     function _burn(address _from, uint256 _amount) internal {
-        // decrease totalSupply
-        _totalSupply = safeSub(_totalSupply, _amount);
         // sub amount for _from balance
         balances[_from] = safeSub(balances[_from], _amount);
-
+        // decrease totalSupply
+        _totalSupply = safeSub(_totalSupply, _amount);
         emit Transfer(_from, LOOPSSMEaddress, _amount);
     }
 
