@@ -8,7 +8,8 @@ But there may still be no way around the miners' cheating.Another possibility is
 ---
 @Conflux TestNet:收集反馈意见
 添加ERC20代币合约地址到钱包 | Add ERC20 token contract address to wallet 
-# 0x8adaa28c47407a7f506515c0d5ad7c40c20457d0
+# 中奖几率递减版本，最后减到万分之一，0x8adaa28c47407a7f506515c0d5ad7c40c20457d0
+# 中奖几率固定版本，1%的中奖几率固定，0x864bfd95ac0879e7c8ff908288dfa8b21b3c521a
 核心玩法：
 1. 传播空投：对于任意一个新地址to，转入tokens数量大于等于1个LOT🎉即可激活新用户to地址的空投，to地址将额外得到一个LOT🎉。仅限一次。
     

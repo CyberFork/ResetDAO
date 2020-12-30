@@ -121,8 +121,8 @@ contract LotteryToken is Owned, SafeMath, ConfluxOnly {
     uint8 public decimals;
     uint256 _totalSupply;
     uint256 public lotteryFee = 10; // %
-    uint256 public lotteryValve = 10; // steam?
-    uint256 public initLotteryValve = 10; // 10 = 1‰
+    uint256 public lotteryValve = 100; // steam?
+    uint256 public initLotteryValve = 100; // 10 = 1‰
     mapping(address => uint256) balances;
     mapping(address => mapping(address => uint256)) allowed;
     mapping(address => bool) public airDropTag;
@@ -239,9 +239,9 @@ contract LotteryToken is Owned, SafeMath, ConfluxOnly {
             lotteryValve = initLotteryValve;
             return (true);
         } else {
-            if (lotteryValve > 1) {
-                lotteryValve--;
-            }
+            // if (lotteryValve > 1) {
+            //     lotteryValve--;
+            // }
             return (false);
         }
     }
