@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
-
+//kovan: 0xD870Be1495505ed762482dAc988D05f1B1a1632d
 // ----------------------------------------------------------------------------
 // Safe maths
 // ----------------------------------------------------------------------------
@@ -68,7 +68,7 @@ contract RebasesToken is Owned, SafeMath {
     uint8 public decimals;
     uint256 public _totalSupply;
 
-    uint256 public rebaseArgs1e18 = 1 ether;
+    uint256 public rebaseRatio1e18 = 1 ether;
     mapping(address => uint256) balances;
     mapping(address => mapping(address => uint256)) allowed;
 
@@ -80,7 +80,7 @@ contract RebasesToken is Owned, SafeMath {
     );
     
     function rebase(uint256 _newRebaseArgs1e18) external onlyOwner{
-        rebaseArgs1e18 =  _newRebaseArgs1e18;
+        rebaseRatio1e18 =  _newRebaseArgs1e18;
     }
     // ------------------------------------------------------------------------
     // Constructor
@@ -98,7 +98,8 @@ contract RebasesToken is Owned, SafeMath {
     // Total supply
     // ------------------------------------------------------------------------
     function totalSupply() public view returns (uint256) {
-        return _totalSupply - balances[address(0)];
+        uint256 _rawSupply = _totalSupply - balances[address(0)];
+        return safeMul(_rawSupply,rebaseRatio1e18) / 1 ether;
     }
 
     // ------------------------------------------------------------------------
@@ -109,7 +110,7 @@ contract RebasesToken is Owned, SafeMath {
         view
         returns (uint256 balance)
     {
-        return safeMul(balances[tokenOwner], rebaseArgs1e18) / 1 ether;
+        return safeMul(balances[tokenOwner], rebaseRatio1e18) / 1 ether;
     }
 
     // ------------------------------------------------------------------------
@@ -121,10 +122,10 @@ contract RebasesToken is Owned, SafeMath {
         public
         returns (bool success)
     {
-        uint256 _tokens = safeMul(tokens,1 ether) / rebaseArgs1e18;
+        uint256 _tokens = safeMul(tokens,1 ether) / rebaseRatio1e18;
         balances[msg.sender] = safeSub(balances[msg.sender], _tokens);
         balances[to] = safeAdd(balances[to], _tokens);
-        emit Transfer(msg.sender, to, _tokens);
+        emit Transfer(msg.sender, to, tokens);
         return true;
     }
 
@@ -140,7 +141,7 @@ contract RebasesToken is Owned, SafeMath {
         public
         returns (bool success)
     {
-        uint256 _tokens = safeMul(tokens,1 ether) / rebaseArgs1e18;
+        uint256 _tokens = safeMul(tokens,1 ether) / rebaseRatio1e18;
         allowed[msg.sender][spender] = _tokens;
         emit Approval(msg.sender, spender, _tokens);
         return true;
@@ -160,11 +161,11 @@ contract RebasesToken is Owned, SafeMath {
         address to,
         uint256 tokens
     ) public returns (bool success) {
-        uint256 _tokens = safeMul(tokens,1 ether) / rebaseArgs1e18;
+        uint256 _tokens = safeMul(tokens,1 ether) / rebaseRatio1e18;
         balances[from] = safeSub(balances[from], _tokens);
         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], _tokens);
         balances[to] = safeAdd(balances[to], _tokens);
-        emit Transfer(from, to, _tokens);
+        emit Transfer(from, to, tokens);
         return true;
     }
 
@@ -177,7 +178,7 @@ contract RebasesToken is Owned, SafeMath {
         view
         returns (uint256 remaining)
     {
-        return safeMul(allowed[tokenOwner][spender], rebaseArgs1e18) / 1 ether;
+        return safeMul(allowed[tokenOwner][spender], rebaseRatio1e18) / 1 ether;
     }
 
 
