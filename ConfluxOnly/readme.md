@@ -6,6 +6,7 @@ But there may still be no way around the miners' cheating.Another possibility is
 
 
 ---
+@Conflux TestNet:收集反馈意见
 添加ERC20代币合约地址到钱包 | Add ERC20 token contract address to wallet 
 # 0x8adaa28c47407a7f506515c0d5ad7c40c20457d0
 核心玩法：
