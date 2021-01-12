@@ -197,11 +197,8 @@ contract LoopssWrapper is ERC20Interface, Owned, SafeMath {
         return ERC20Interface(tokenAddress).transfer(owner, amount);
     }
 
-    fallback() external payable {
-        revert();
+    function withdrawBalances(uint256 _amount) external onlyOwner{
+        payable(owner).transfer(_amount);
     }
-
-    receive() external payable {
-        revert();
-    }
+    
 }

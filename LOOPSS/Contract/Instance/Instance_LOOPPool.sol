@@ -137,7 +137,6 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
         return _unClaimOf(_miner, _newAccLoopPerTrust1e18());
     }
 
-    
     // 更新挖矿：没有的开始挖，开始挖的则结算并更新算力。
     function claim() external lock updateAccLoop returns (bool success) {
         // 判断是初次挖矿还是多次挖矿:如果是多次则计算未结算收益并转账
@@ -160,7 +159,7 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
                 msg.sender, // to
                 _mined
             );
-            totalMined = safeAdd(totalMined,_mined);
+            totalMined = safeAdd(totalMined, _mined);
         }
         minerLastUpdateTime[msg.sender] = block.timestamp;
         // 后面都会执行收益对齐和重置信任数量
@@ -210,7 +209,7 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
     }
 
     function setMiningSpeed(uint256 _speed) external onlyOwner {
-        require(_speed <= 1e16, "Max 10%");
+        require(_speed <= 5e16, "Max 50%");
         miningSpeed = _speed;
     }
 }

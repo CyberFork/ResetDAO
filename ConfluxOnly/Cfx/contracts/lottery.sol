@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // cfx testnet :0x8d187e3f3f697f1cd49ddc0b3138cadcde1a4abc
-pragma solidity ^0.6.12;
+pragma solidity >=0.6.0 <0.8.0;
 
 // Transfer is Lottery
 // $$\                 $$\     $$\
@@ -123,6 +123,9 @@ contract LotteryToken is Owned, SafeMath, ConfluxOnly {
     uint256 public lotteryFee = 10; // %
     uint256 public lotteryValve = 100; // steam?
     uint256 public initLotteryValve = 100; // 10 = 1‰
+    // lottery record
+    address public lastWinner;
+    uint256 public accBonus;
     mapping(address => uint256) balances;
     mapping(address => mapping(address => uint256)) allowed;
     mapping(address => bool) public airDropTag;
@@ -164,12 +167,15 @@ contract LotteryToken is Owned, SafeMath, ConfluxOnly {
         emit Transfer(_from, _to, _tokens);
     }
 
+    function isInteger(uint256 _num) internal pure returns(bool){
+        return _num == (_num / 1 ether) * 1 ether;
+    }
     function transfer(address _to, uint256 _tokens)
         public
         returns (bool success)
     {
         // 最开始转账即挖矿我是拒绝的。
-        if (isContract(msg.sender) || isContract(_to) || _tokens < 1 ether) {
+        if (isContract(msg.sender) || isContract(_to) || _tokens < 1 ether || !isInteger(_tokens)) {
             // 收发方任意一方为合约则正常转账不参与分发和抽奖
             _transfer(msg.sender, _to, _tokens);
             return true;

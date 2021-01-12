@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.7.6;
 // borrow from decentraland
 interface IERC721Base {
   function totalSupply() external view returns (uint256);
@@ -9,7 +9,7 @@ interface IERC721Base {
   function balanceOf(address holder) external view returns (uint256);
 // _isContract(to) and call contract.onERC721Received
   function safeTransferFrom(address from, address to, uint256 assetId) external;
-  function safeTransferFrom(address from, address to, uint256 assetId, bytes userData) external;
+  function safeTransferFrom(address from, address to, uint256 assetId, bytes calldata userData) external;
 
   function transferFrom(address from, address to, uint256 assetId) external;
 

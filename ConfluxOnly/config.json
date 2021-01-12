@@ -3,6 +3,6 @@
   "deploy": "./build/contracts/LotteryToken.json",
   "compilers": {
     "cfxtruffle": "0.0.8",
-    "solc": "default"
+    "solc": "0.6.12"
   }
 }
