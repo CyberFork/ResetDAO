@@ -1,0 +1,13 @@
+{
+  "name": "eventsCacheServe",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": ""
+  },
+  "dependencies": {
+    "js-conflux-sdk": "",
+    "mongodb": "^3.6.3",
+    "mysql": ""
+  }
+}

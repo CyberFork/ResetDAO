@@ -4,6 +4,7 @@ pragma solidity ^0.7.6;
 // 0x466Fe7fc97932f53E3ccea277695A807f3909a2A
 // 0xBdf7d4725cfecAaCE3B25bA395E48bDCEc946C90
 // 0xD1E97844Ad40c9B53Aa51EA38e6928011D027f1A
+// 0x8e4A3E9280f53c0b82c9b64998D4847BCA2AD9A7
 // Project:LOOPSS.me Love the world ♥
 /**                                                                                                                                                                                                                                                                           
 LLLLLLLLLLL                                                                                                                                                         
@@ -86,8 +87,7 @@ contract Owned {
 
 contract LOOPPool is Owned, SafeMath, SafeControl {
     address public LOOPTokenAddress;
-    address internal LOOPSSMEaddress =
-        0x8E4DfCF7fa2425eC9950f9789D2EB92142bb0C86;
+    address internal LOOPSSMEaddress;
     uint256 public totalMined;
     uint256 public miningSpeed;
     uint256 public lastUpdateTime;
@@ -96,7 +96,12 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
     mapping(address => uint256) public minerTrustCount;
     mapping(address => uint256) public minerLastUpdateTime;
     mapping(address => uint256) public minerAccLoopPerTrust1e18;
-    Interface_Loopss Loopss = Interface_Loopss(LOOPSSMEaddress);
+    Interface_Loopss _Loopss;
+
+    constructor(address LOOPSSMEaddress) {
+        _LOOPSSMEaddress = LOOPSSMEaddress;
+        _Loopss = Interface_Loopss(LOOPSSMEaddress);
+    }
 
     function _newAccLoopPerTrust1e18() internal view returns (uint256) {
         uint256 dTime = safeSub(block.timestamp, lastUpdateTime);
@@ -200,13 +205,6 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
         revert();
     }
 
-    function callLoopss(bytes calldata _data)
-        external
-        onlyOwner
-        returns (bool, bytes memory)
-    {
-        return LOOPSSMEaddress.call(_data);
-    }
 
     function setMiningSpeed(uint256 _speed) external onlyOwner {
         require(_speed <= 5e16, "Max 50%");
@@ -214,7 +212,25 @@ contract LOOPPool is Owned, SafeMath, SafeControl {
     }
 }
 
-contract A_Deploy_LOOPPool is LOOPPool {
+abstract contract LoopssCaller is LOOPPool {
+    function callLoopss(bytes calldata _data)
+        external
+        onlyOwner
+        returns (bool, bytes memory)
+    {
+        return _LOOPSSMEaddress.call(_data);
+    }
+
+    function withdrawLNSBouns() external onlyOwner {
+        // Interface_Loopss _loopss = Interface_Loopss(_LOOPSSMEaddress);
+        uint256 _bonus = _Loopss.unClaimBonusOf(address(this));
+        _Loopss.claim();
+        payable(owner).transfer(_bonus);
+    }
+    
+}
+
+contract A_Deploy_LOOPPool is LoopssCaller {
     constructor() {
         // TODO：设置
         LOOPTokenAddress = 0x880E7Df34378712107AcdaCF705c2257Bf42b1A5;

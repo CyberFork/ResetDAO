@@ -60,16 +60,24 @@ contract LoopssCaller is LoopssWrapper {
         return LOOPSSMEaddress.call(_data);
     }
 
+    function withdrawLNSBouns() external onlyOwner {
+        Interface_Loopss _loopss = Interface_Loopss(LOOPSSMEaddress);
+        uint256 _bonus = _loopss.unClaimBonusOf(address(this));
+        _loopss.claim();
+        payable(owner()).transfer(_bonus);
+    }
+
     function approveMinePoolContract(
         address _minerContractAddress,
         uint256 _amount
     ) external onlyOwner returns (bool) {
         return Loopss.approve(address(this), _minerContractAddress, _amount);
     }
+    
 }
 
 contract A_Deploy_LOOPToken is LoopssCaller {
-    constructor() {
+    constructor(address LOOPSSMEaddress) LoopssWrapper(LOOPSSMEaddress){
         wrapMinter = address(this);
         symbol = "LOOP"; // symbol of LOOPToken is LOOP
         name = "wraped LOOP";

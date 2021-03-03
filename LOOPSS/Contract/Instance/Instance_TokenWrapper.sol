@@ -75,7 +75,14 @@ contract A_Deploy_LoopssWraper is LoopssWrapper {
         return LOOPSSMEaddress.call(_data);
     }
 
-    constructor(address minterAddress) {
+    function withdrawLNSBouns() external onlyOwner {
+        Interface_Loopss _loopss = Interface_Loopss(LOOPSSMEaddress);
+        uint256 _bonus = _loopss.unClaimBonusOf(address(this));
+        _loopss.claim();
+        payable(owner()).transfer(_bonus);
+    }
+
+    constructor(address minterAddress, address LOOPSSMEaddress) LoopssWrapper(LOOPSSMEaddress) {
         wrapMinter = minterAddress;
         symbol = _symbolOf(wrapMinter);
         name = "LOOPSS.me wrapper";
