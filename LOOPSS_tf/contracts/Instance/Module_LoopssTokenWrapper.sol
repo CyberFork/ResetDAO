@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
 
-import "../Interface/Interface_Loopss.sol";
 import "../Interface/ERC20Interface.sol";
 import "./SafeMath.sol";
 import './Module_LoopssCaller.sol';
